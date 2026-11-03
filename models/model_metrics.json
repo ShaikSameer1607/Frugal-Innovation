@@ -1,0 +1,148 @@
+{
+    "model_type": "RandomForestRegressor Pipeline (OneHotEncoder + StandardScaler)",
+    "train_timestamp": "2026-11-02T22:03:15.654717",
+    "random_seed": 42,
+    "dataset_records_total": 4457,
+    "train_records": 3569,
+    "test_records": 888,
+    "split_strategy": "Chronological (First 80% dates for train, final 20% for test)",
+    "features_used": [
+        "day_of_week",
+        "meal_type",
+        "dish_name",
+        "expected_attendance",
+        "registered_students",
+        "historical_demand",
+        "registration_ratio",
+        "is_weekend"
+    ],
+    "target": "actual_servings_needed",
+    "rf_metrics": {
+        "mae": 13.821,
+        "rmse": 17.505,
+        "r2": 0.9257
+    },
+    "historical_baseline_metrics": {
+        "mae": 28.981,
+        "rmse": 39.621,
+        "r2": 0.6194
+    },
+    "mean_baseline_metrics": {
+        "mae": 53.993,
+        "rmse": 64.231,
+        "r2": -0.0003
+    },
+    "sample_predictions": [
+        {
+            "date": "2026-09-03",
+            "meal_type": "Breakfast",
+            "dish_name": "Aloo Paratha",
+            "registered_students": 360,
+            "historical_demand": 328.2,
+            "Actual_Needed": 321,
+            "Predicted_RF": 309,
+            "Error_RF": -12,
+            "Hist_Baseline": 328
+        },
+        {
+            "date": "2026-09-03",
+            "meal_type": "Dinner",
+            "dish_name": "Cabbage Baji",
+            "registered_students": 466,
+            "historical_demand": 284.4,
+            "Actual_Needed": 286,
+            "Predicted_RF": 291,
+            "Error_RF": 5,
+            "Hist_Baseline": 284
+        },
+        {
+            "date": "2026-09-03",
+            "meal_type": "Dinner",
+            "dish_name": "Chapati",
+            "registered_students": 466,
+            "historical_demand": 279.8,
+            "Actual_Needed": 310,
+            "Predicted_RF": 337,
+            "Error_RF": 27,
+            "Hist_Baseline": 280
+        },
+        {
+            "date": "2026-09-03",
+            "meal_type": "Dinner",
+            "dish_name": "Dal",
+            "registered_students": 466,
+            "historical_demand": 324.2,
+            "Actual_Needed": 301,
+            "Predicted_RF": 351,
+            "Error_RF": 50,
+            "Hist_Baseline": 324
+        },
+        {
+            "date": "2026-09-03",
+            "meal_type": "Dinner",
+            "dish_name": "Ivy Gourd Fry",
+            "registered_students": 466,
+            "historical_demand": 263.0,
+            "Actual_Needed": 274,
+            "Predicted_RF": 295,
+            "Error_RF": 21,
+            "Hist_Baseline": 263
+        },
+        {
+            "date": "2026-09-03",
+            "meal_type": "Dinner",
+            "dish_name": "Plain Rice",
+            "registered_students": 466,
+            "historical_demand": 318.6,
+            "Actual_Needed": 387,
+            "Predicted_RF": 370,
+            "Error_RF": -17,
+            "Hist_Baseline": 319
+        },
+        {
+            "date": "2026-09-03",
+            "meal_type": "Lunch",
+            "dish_name": "Brinjal Tomato",
+            "registered_students": 444,
+            "historical_demand": 278.6,
+            "Actual_Needed": 263,
+            "Predicted_RF": 290,
+            "Error_RF": 27,
+            "Hist_Baseline": 279
+        },
+        {
+            "date": "2026-09-03",
+            "meal_type": "Lunch",
+            "dish_name": "Chapati",
+            "registered_students": 444,
+            "historical_demand": 301.5,
+            "Actual_Needed": 330,
+            "Predicted_RF": 328,
+            "Error_RF": -2,
+            "Hist_Baseline": 302
+        },
+        {
+            "date": "2026-09-03",
+            "meal_type": "Lunch",
+            "dish_name": "Dal Fry",
+            "registered_students": 444,
+            "historical_demand": 339.2,
+            "Actual_Needed": 362,
+            "Predicted_RF": 360,
+            "Error_RF": -2,
+            "Hist_Baseline": 339
+        },
+        {
+            "date": "2026-09-03",
+            "meal_type": "Lunch",
+            "dish_name": "Kadhi Pakoda",
+            "registered_students": 444,
+            "historical_demand": 303.1,
+            "Actual_Needed": 293,
+            "Predicted_RF": 322,
+            "Error_RF": 29,
+            "Hist_Baseline": 303
+        }
+    ],
+    "synthetic_notice": "These metrics demonstrate prototype performance on synthetic hostel data. They illustrate model feasibility under simulated demand patterns and do not guarantee identical predictive performance on live college mess attendance."
+}

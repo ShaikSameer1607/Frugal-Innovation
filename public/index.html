@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Mess | MessMind AI</title>
+    <!-- Google Fonts: Newsreader (Serif) & Inter (Sans-serif) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- AUTHENTICATION OVERLAY (MODAL IF LOGGED OUT) -->
+    <div id="auth-modal" class="auth-modal-overlay">
+        <div class="auth-card">
+            <h2 class="auth-title">Smart Mess</h2>
+            <p class="auth-sub">IIIT Dharwad Mess 1 • Authentication Portal</p>
+
+            <div class="auth-tabs">
+                <button type="button" class="auth-tab-btn active" id="tab-btn-student" onclick="setAuthRole('Student')">Student Portal</button>
+                <button type="button" class="auth-tab-btn" id="tab-btn-admin" onclick="setAuthRole('Admin')">Admin Portal</button>
+            </div>
+
+            <form id="login-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label id="lbl-username">Student Roll Number / Username</label>
+                    <input type="text" id="auth-username" class="form-input" placeholder="e.g. 24BDS021 or admin" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="auth-password" class="form-input" placeholder="Enter password" required>
+                    <div style="font-size:0.76rem; color:#8FA498; margin-top:4px;">Default password for 1,200 students: your Roll Number (e.g. 24BDS074) or Student@123</div>
+                </div>
+
+                <div id="auth-error" class="auth-error-msg"></div>
+
+                <button type="submit" class="btn-primary full-width" id="btn-submit-auth">Sign In to Portal</button>
+            </form>
+
+            <div class="quick-credentials">
+                <div class="qc-title">Quick Demo Logins:</div>
+                <div class="qc-buttons">
+                    <button type="button" class="qc-chip" onclick="quickFill('24BDS021', 'Student@123', 'Student')">Student (24BDS021)</button>
+                    <button type="button" class="qc-chip" onclick="quickFill('24BCS101', 'Student@123', 'Student')">Student (24BCS101)</button>
+                    <button type="button" class="qc-chip qc-admin" onclick="quickFill('admin', 'Admin@123', 'Admin')">Admin (admin)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP CONTAINER -->
+    <div class="app-container" id="app-content">
+
+        <!-- HEADER SECTION -->
+        <header class="app-header">
+            <div class="header-left">
+                <h1 class="brand-title">Smart Mess</h1>
+                <p class="brand-subtitle">Predict, prevent, redistribute: food waste tracking for a 1,200-student mess</p>
+            </div>
+
+            <div class="header-right">
+                <!-- Portal Switcher Pill -->
+                <div class="pill-group" id="portal-pill-group">
+                    <button type="button" class="pill-btn active" id="pill-portal-student" onclick="switchPortal('Student')">Student</button>
+                    <button type="button" class="pill-btn" id="pill-portal-admin" onclick="switchPortal('Admin')">Admin</button>
+                </div>
+
+                <!-- Week A / Week B Switcher Pill -->
+                <div class="pill-group">
+                    <button type="button" class="pill-btn active" id="pill-week-a" onclick="switchWeek('Week A')">Week A</button>
+                    <button type="button" class="pill-btn" id="pill-week-b" onclick="switchWeek('Week B')">Week B</button>
+                </div>
+
+                <!-- User Profile & Logout -->
+                <div class="user-profile-badge">
+                    <span id="header-user-display">24BDS021</span>
+                    <button type="button" class="logout-btn" onclick="handleLogout()" title="Logout">Logout</button>
+                </div>
+            </div>
+        </header>
+
+        <!-- PROTOTYPE NOTICE BANNER -->
+        <div class="notice-banner">
+            Prototype: attendance responses and weeks 1–3 are simulated. Opt-ins, ratings and waste logs you enter here are live. Per-head quantities are typical estimates and should be calibrated with your mess.
+        </div>
+
+        <!-- WEEK A / WEEK B EXPLANATION & ACTIVE WEEK BANNER -->
+        <div class="week-note-banner">
+            <span>ℹ️ <strong>Menu Alternation:</strong> Week A and Week B represent alternating dishes in the official mess menu.</span>
+            <span id="active-week-badge" class="active-week-indicator">Official Active: Week A</span>
+        </div>
+
+        <!-- ============================================================= -->
+        <!-- STUDENT PORTAL SECTION -->
+        <!-- ============================================================= -->
+        <main id="portal-student" class="portal-view">
+
+            <!-- Student Navigation Pills -->
+            <nav class="nav-pills-bar">
+                <button type="button" class="nav-pill active" id="snav-weekly-menu" onclick="switchStudentNav('weekly-menu')">Weekly menu</button>
+                <button type="button" class="nav-pill" id="snav-my-meals" onclick="switchStudentNav('my-meals')">My meals</button>
+                <button type="button" class="nav-pill" id="snav-rate-dishes" onclick="switchStudentNav('rate-dishes')">Rate dishes</button>
+                <button type="button" class="nav-pill" id="snav-my-impact" onclick="switchStudentNav('my-impact')">My impact</button>
+                <button type="button" class="nav-pill" id="snav-leaderboard" onclick="switchStudentNav('leaderboard')">Leaderboard</button>
+                <button type="button" class="nav-pill notif-pill" id="snav-notifications" onclick="switchStudentNav('notifications')">
+                    Notifications <span id="student-unread-badge" class="badge-count" style="display:none;">0</span>
+                </button>
+            </nav>
+
+            <!-- TAB 1: WEEKLY MENU -->
+            <section id="stab-weekly-menu" class="student-tab active" style="display:block;">
+                <div class="day-pills-bar" id="menu-day-pills">
+                    <button type="button" class="day-pill active" onclick="setDay('Mon')">Mon</button>
+                    <button type="button" class="day-pill" onclick="setDay('Tue')">Tue</button>
+                    <button type="button" class="day-pill" onclick="setDay('Wed')">Wed</button>
+                    <button type="button" class="day-pill" onclick="setDay('Thu')">Thu</button>
+                    <button type="button" class="day-pill" onclick="setDay('Fri')">Fri</button>
+                    <button type="button" class="day-pill" onclick="setDay('Sat')">Sat</button>
+                    <button type="button" class="day-pill" onclick="setDay('Sun')">Sun</button>
+                </div>
+
+                <div class="meal-grid" id="menu-meal-grid">
+                    <!-- Populated dynamically via JS -->
+                </div>
+
+                <div class="sub-disclaimer">
+                    Items written with a slash alternate between weeks. Use the Week A / Week B toggle to switch.
+                </div>
+            </section>
+
+            
+
+            
+
+            <!-- TAB 2: MY MEALS (Eating / Skipping) -->
+            <section id="stab-my-meals" class="student-tab" style="display:none;">
+                <div class="day-pills-bar" id="meals-day-pills">
+                    <button type="button" class="day-pill active" onclick="setDay('Mon')">Mon</button>
+                    <button type="button" class="day-pill" onclick="setDay('Tue')">Tue</button>
+                    <button type="button" class="day-pill" onclick="setDay('Wed')">Wed</button>
+                    <button type="button" class="day-pill" onclick="setDay('Thu')">Thu</button>
+                    <button type="button" class="day-pill" onclick="setDay('Fri')">Fri</button>
+                    <button type="button" class="day-pill" onclick="setDay('Sat')">Sat</button>
+                    <button type="button" class="day-pill" onclick="setDay('Sun')">Sun</button>
+                </div>
+
+                <p class="tab-directive">
+                    Tell the mess before the cutoff (8 PM the previous night). Your answer changes tomorrow's cooking quantity.
+                </p>
+
+                <div class="meal-grid" id="my-meals-grid">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </section>
+
+            
+
+            
+
+            <!-- TAB 3: RATE DISHES -->
+            <section id="stab-rate-dishes" class="student-tab" style="display:none;">
+                <div class="day-pills-bar" id="rate-day-pills">
+                    <button type="button" class="day-pill active" onclick="setDay('Mon')">Mon</button>
+                    <button type="button" class="day-pill" onclick="setDay('Tue')">Tue</button>
+                    <button type="button" class="day-pill" onclick="setDay('Wed')">Wed</button>
+                    <button type="button" class="day-pill" onclick="setDay('Thu')">Thu</button>
+                    <button type="button" class="day-pill" onclick="setDay('Fri')">Fri</button>
+                    <button type="button" class="day-pill" onclick="setDay('Sat')">Sat</button>
+                    <button type="button" class="day-pill" onclick="setDay('Sun')">Sun</button>
+                </div>
+
+                <div class="meal-filter-bar">
+                    <button type="button" class="sub-pill active" onclick="setRateMeal('Breakfast')">Breakfast</button>
+                    <button type="button" class="sub-pill" onclick="setRateMeal('Lunch')">Lunch</button>
+                    <button type="button" class="sub-pill" onclick="setRateMeal('Snacks')">Snacks</button>
+                    <button type="button" class="sub-pill" onclick="setRateMeal('Dinner')">Dinner</button>
+                </div>
+
+                <div class="rate-card-container" id="rate-dishes-list">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </section>
+
+            
+
+            
+
+            <!-- TAB 4: MY IMPACT -->
+            <section id="stab-my-impact" class="student-tab" style="display:none;">
+                <div class="impact-cards-row">
+                    <div class="impact-card">
+                        <div class="card-label">Green points</div>
+                        <div class="impact-number" id="impact-green-points">20</div>
+                        <div class="impact-sub" id="impact-level">Level: Seedling</div>
+                    </div>
+                    <div class="impact-card">
+                        <div class="card-label">Meals skipped in advance</div>
+                        <div class="impact-number" id="impact-meals-skipped">0</div>
+                    </div>
+                    <div class="impact-card">
+                        <div class="card-label">Food not cooked because of you (estimate)</div>
+                        <div class="impact-number highlight-mint" id="impact-food-saved">0.00 kg</div>
+                    </div>
+                </div>
+
+                <div class="impact-footnote">
+                    +10 points for each opt-in or skip, +5 for each dish rating. About 0.35 kg of food is cooked per meal per student.
+                </div>
+            </section>
+
+            
+
+            
+
+            <!-- TAB 5: NOTIFICATIONS -->
+            <section id="stab-notifications" class="student-tab" style="display:none;">
+                <div class="notif-header">
+                    <h3 class="tab-title">🔔 Dining Announcements & Alerts</h3>
+                    <button type="button" class="btn-secondary" onclick="markAllNotificationsRead()">Mark all as read</button>
+                </div>
+
+                <div class="notifications-container" id="student-notif-list">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </section>
+
+            
+
+            
+
+        
+            <!-- TAB 6: STUDENT LEADERBOARD -->
+            <section id="stab-leaderboard" class="student-tab" style="display:none;">
+                <div style="margin-bottom:20px;">
+                    <h3 class="tab-title">🏆 Campus Eco-Impact Leaderboard</h3>
+                    <p class="form-sub" style="margin-top:4px;">Earn Green Points by logging meal attendance, skipping when away, and rating daily mess recipes.</p>
+                </div>
+
+                <!-- Personal Standing Banner -->
+                <div id="student-my-standing" class="my-standing-banner">
+                    <div class="ms-left">
+                        <div class="ms-rank-badge" id="ms-rank-num">#1</div>
+                        <div>
+                            <div class="ms-info-title" id="ms-student-name">Your Mess Standing</div>
+                            <div class="ms-info-sub" id="ms-student-sub">Active Contributor</div>
+                        </div>
+                    </div>
+                    <div class="ms-metrics">
+                        <div class="ms-metric-item">
+                            <div class="ms-metric-val" id="ms-green-pts">0 pts</div>
+                            <div class="ms-metric-lbl">Total Green Points</div>
+                        </div>
+                        <div class="ms-metric-item">
+                            <div class="ms-metric-val" id="ms-food-saved">0 kg</div>
+                            <div class="ms-metric-lbl">Food Waste Avoided</div>
+                        </div>
+                        <div class="ms-metric-item">
+                            <div class="ms-metric-val" id="ms-skips-count">0</div>
+                            <div class="ms-metric-lbl">Meals Skipped</div>
+                        </div>
+                        <div class="ms-metric-item">
+                            <div id="ms-badge-tag" class="badge-eco-champ">🌿 Eco Champion</div>
+                            <div class="ms-metric-lbl">Current Tier</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top 3 Podium -->
+                <div class="podium-grid" id="student-podium-grid">
+                    <!-- Populated dynamically via JS -->
+                </div>
+
+                <!-- Search & Leaderboard Table Card -->
+                <div class="user-directory-card">
+                    <div class="user-toolbar">
+                        <div class="toolbar-left">
+                            <input type="text" id="student-lb-search" class="form-input" placeholder="🔍 Search roll number or name..." oninput="handleStudentLeaderboardSearch(this.value)">
+                        </div>
+                        <div class="toolbar-right">
+                            <span style="font-size:0.82rem; color:var(--text-muted);" id="student-lb-total-label">1,200+ Students Participating</span>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive" style="margin-top:16px;">
+                        <table class="user-directory-table">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Roll Number</th>
+                                    <th>Student Name</th>
+                                    <th>Meals Logged</th>
+                                    <th>Food Saved (kg)</th>
+                                    <th>Dish Ratings</th>
+                                    <th>Green Points</th>
+                                    <th>Eco Tier</th>
+                                </tr>
+                            </thead>
+                            <tbody id="student-lb-tbody">
+                                <tr><td colspan="8" style="text-align:center; color:#8FA498; padding:24px;">Loading leaderboard standings...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="user-pagination-bar">
+                        <span id="student-lb-page-info" class="user-count-info">Showing top accounts</span>
+                        <div class="user-pagination-btns">
+                            <button type="button" class="btn-subtle" id="btn-prev-slb" onclick="prevStudentLbPage()" disabled>Previous</button>
+                            <span id="student-lb-page-indicator" style="font-size:12px; color:#A7F3D0; font-weight:600; padding:0 8px;">Page 1</span>
+                            <button type="button" class="btn-subtle" id="btn-next-slb" onclick="nextStudentLbPage()">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+</main>
+
+        <!-- ============================================================= -->
+        <!-- ADMIN PORTAL SECTION -->
+        <!-- ============================================================= -->
+        <main id="portal-admin" class="portal-view" style="display:none;">
+
+            <!-- Admin Navigation Pills -->
+            <nav class="nav-pills-bar">
+                <button type="button" class="nav-pill active" id="anav-dashboard" onclick="switchAdminNav('dashboard')">Dashboard</button>
+                <button type="button" class="nav-pill" id="anav-planner" onclick="switchAdminNav('planner')">Planner</button>
+                <button type="button" class="nav-pill" id="anav-log-waste" onclick="switchAdminNav('log-waste')">Log waste</button>
+                <button type="button" class="nav-pill" id="anav-analytics" onclick="switchAdminNav('analytics')">Analytics</button>
+                <button type="button" class="nav-pill" id="anav-leaderboard" onclick="switchAdminNav('leaderboard')">Leaderboard</button>
+                <button type="button" class="nav-pill" id="anav-users" onclick="switchAdminNav('users')">Manage Users</button>
+            </nav>
+
+            <!-- TAB 1: DASHBOARD -->
+            <section id="atab-dashboard" class="admin-tab active" style="display:block;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:14px;">
+                    <div class="day-pills-bar" id="admin-day-pills" style="margin-bottom:0;">
+                        <button type="button" class="day-pill active" onclick="setAdminDay('Mon')">Mon</button>
+                        <button type="button" class="day-pill" onclick="setAdminDay('Tue')">Tue</button>
+                        <button type="button" class="day-pill" onclick="setAdminDay('Wed')">Wed</button>
+                        <button type="button" class="day-pill" onclick="setAdminDay('Thu')">Thu</button>
+                        <button type="button" class="day-pill" onclick="setAdminDay('Fri')">Fri</button>
+                        <button type="button" class="day-pill" onclick="setAdminDay('Sat')">Sat</button>
+                        <button type="button" class="day-pill" onclick="setAdminDay('Sun')">Sun</button>
+                    </div>
+
+                    <div class="data-source-bar" style="margin-bottom:0;">
+                        <span class="ds-label">Data Filter:</span>
+                        <button type="button" class="ds-pill active" id="dspill-real" onclick="setDataSource('REAL')">REAL</button>
+                        <button type="button" class="ds-pill" id="dspill-all" onclick="setDataSource('ALL')">ALL (Live + Baseline)</button>
+                        <button type="button" class="ds-pill" id="dspill-synthetic" onclick="setDataSource('SYNTHETIC')">SYNTHETIC</button>
+                    </div>
+                </div>
+
+                <div id="dashboard-insufficient-notice" class="insufficient-data-alert" style="display:none;">
+                    <span>⚠️</span>
+                    <span>Insufficient real operational data. Submit actual meal records to generate this metric.</span>
+                </div>
+
+                <h2 class="section-heading" id="admin-headcount-heading">Expected headcount for Monday</h2>
+
+                <!-- 4 Headcount Cards -->
+                <div class="headcount-grid" id="headcount-cards-grid">
+                    <!-- Dynamically populated -->
+                </div>
+
+                <!-- 4 KPI Metrics Row -->
+                <div class="kpi-metrics-row">
+                    <div class="kpi-card">
+                        <div class="kpi-label">Over-cooking avoided today</div>
+                        <div class="kpi-value highlight-mint" id="kpi-overcooking-avoided">163 kg</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Waste this week</div>
+                        <div class="kpi-value" id="kpi-waste-this-week">258 kg</div>
+                        <div class="kpi-sub">Baseline week: 460 kg</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label">Reduction vs baseline</div>
+                        <div class="kpi-value highlight-mint" id="kpi-reduction-pct">44%</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-label" id="kpi-money-saved-label">Money saved per week (₹35/kg)</div>
+                        <div class="kpi-value highlight-mint" id="kpi-money-saved">₹7,070</div>
+                    </div>
+                </div>
+
+                <!-- "Where this week's food went" Card -->
+                <div class="flow-card">
+                    <h3 class="flow-title">Where this week's food went</h3>
+                    <div class="flow-summary" id="flow-cooked-summary">
+                        Cooked 3650 kg, of which 3392 kg was eaten and 258 kg wasted.
+                    </div>
+                    <div class="flow-bar-container">
+                        <div class="flow-segment segment-eaten" id="flow-bar-eaten" style="width:93%;"></div>
+                        <div class="flow-segment segment-waste" id="flow-bar-waste" style="width:7%;"></div>
+                    </div>
+
+                    <div class="flow-sub-title" id="flow-sub-title">What happened to the wasted 258 kg</div>
+                    <div class="flow-bar-container">
+                        <div class="flow-segment segment-ngo" id="flow-bar-ngo" style="width:45%;" title="NGO Food Bank"></div>
+                        <div class="flow-segment segment-compost" id="flow-bar-compost" style="width:35%;" title="Compost"></div>
+                        <div class="flow-segment segment-discarded" id="flow-bar-disc" style="width:20%;" title="Discarded"></div>
+                    </div>
+
+                    <div class="flow-legend">
+                        <span class="legend-item"><span class="dot dot-ngo"></span> NGO Donation: <strong id="flow-txt-ngo">116 kg (45%)</strong></span>
+                        <span class="legend-item"><span class="dot dot-compost"></span> Composting & Biogas: <strong id="flow-txt-comp">90 kg (35%)</strong></span>
+                        <span class="legend-item"><span class="dot dot-disc"></span> Discarded / Landfill: <strong id="flow-txt-disc">52 kg (20%)</strong></span>
+                    </div>
+                </div>
+
+                <!-- Announcement Broadcaster -->
+                <div class="broadcaster-card">
+                    <div class="broadcaster-header" onclick="toggleBroadcaster()">
+                        <span class="broadcaster-title">📢 Broadcast Dining Announcement to Students</span>
+                        <span class="toggle-icon" id="broadcaster-toggle-icon">▼</span>
+                    </div>
+                    <div class="broadcaster-body" id="broadcaster-body" style="display:none;">
+                        <div class="form-row">
+                            <div class="form-group flex-2">
+                                <label>Quick Template</label>
+                                <select id="bc-template-select" class="form-input" onchange="applyBroadcastTemplate()">
+                                    <option value="">Custom Announcement</option>
+                                    <option value="Tomorrow's breakfast menu has changed.">Tomorrow's breakfast menu has changed.</option>
+                                    <option value="Lunch starts at 12:30 PM.">Lunch starts at 12:30 PM.</option>
+                                    <option value="Dinner service timing has been updated.">Dinner service timing has been updated.</option>
+                                    <option value="Please submit your attendance before 8 PM.">Please submit your attendance before 8 PM.</option>
+                                </select>
+                            </div>
+                            <div class="form-group flex-1">
+                                <label>Severity</label>
+                                <select id="bc-severity" class="form-input">
+                                    <option value="info">Info</option>
+                                    <option value="warning">Warning</option>
+                                    <option value="critical">Critical</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Title</label>
+                            <input type="text" id="bc-title" class="form-input" placeholder="Announcement Title">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Message Body</label>
+                            <textarea id="bc-message" class="form-input" rows="2" placeholder="Write message to students..."></textarea>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group flex-1">
+                                <label>Audience Targeting</label>
+                                <select id="bc-targeting" class="form-input">
+                                    <option value="all">All Students (Everyone)</option>
+                                    <option value="attending_meal">Students Attending a Meal</option>
+                                    <option value="unresponded">Students Not Responded</option>
+                                    <option value="date_meal">Students of Date/Shift</option>
+                                </select>
+                            </div>
+                            <div class="form-group flex-1">
+                                <label>Target Meal Shift</label>
+                                <select id="bc-meal" class="form-input">
+                                    <option value="Breakfast">Breakfast</option>
+                                    <option value="Lunch" selected>Lunch</option>
+                                    <option value="Snacks">Snacks</option>
+                                    <option value="Dinner">Dinner</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button type="button" class="btn-primary" onclick="sendBroadcastAnnouncement()">🚀 Broadcast to Students</button>
+                    </div>
+                </div>
+            </section>
+
+            
+
+            
+
+            <!-- TAB 2: PLANNER (Exact match to reference) -->
+            <section id="atab-planner" class="admin-tab" style="display:none;">
+                <div class="day-pills-bar" id="planner-day-pills">
+                    <button type="button" class="day-pill active" onclick="setPlannerDay('Mon')">Mon</button>
+                    <button type="button" class="day-pill" onclick="setPlannerDay('Tue')">Tue</button>
+                    <button type="button" class="day-pill" onclick="setPlannerDay('Wed')">Wed</button>
+                    <button type="button" class="day-pill" onclick="setPlannerDay('Thu')">Thu</button>
+                    <button type="button" class="day-pill" onclick="setPlannerDay('Fri')">Fri</button>
+                    <button type="button" class="day-pill" onclick="setPlannerDay('Sat')">Sat</button>
+                    <button type="button" class="day-pill" onclick="setPlannerDay('Sun')">Sun</button>
+                </div>
+
+                <div class="meal-filter-bar" id="planner-meal-pills">
+                    <button type="button" class="sub-pill" onclick="setPlannerMeal('Breakfast')">Breakfast</button>
+                    <button type="button" class="sub-pill active" onclick="setPlannerMeal('Lunch')">Lunch</button>
+                    <button type="button" class="sub-pill" onclick="setPlannerMeal('Snacks')">Snacks</button>
+                    <button type="button" class="sub-pill" onclick="setPlannerMeal('Dinner')">Dinner</button>
+                </div>
+
+                <div class="planner-card">
+                    <h3 class="planner-title" id="planner-header-title">Monday Lunch: cook for 1119 students</h3>
+                    <p class="planner-sub">Quantity = predicted headcount × per-head portion. The last column is what you avoid versus cooking for all 1,200.</p>
+
+                    <!-- Responsive Planner Table -->
+                    <div class="table-responsive">
+                        <table class="planner-table">
+                            <thead>
+                                <tr>
+                                    <th>Dish</th>
+                                    <th>Type</th>
+                                    <th>Per head</th>
+                                    <th>Cook</th>
+                                    <th>Avoided</th>
+                                </tr>
+                            </thead>
+                            <tbody id="planner-table-body">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            
+
+            
+
+            <!-- TAB 3: LOG WASTE -->
+            <section id="atab-log-waste" class="admin-tab" style="display:none;">
+                <div class="waste-form-card">
+                    <h3 class="form-title">Log Kitchen Food Waste</h3>
+                    <p class="form-sub">Record actual weighed waste to update dashboard KPIs and generate high-waste alerts (> 25 kg).</p>
+
+                    <form id="waste-log-form" onsubmit="handleWasteSubmit(event)">
+                        <div class="form-row">
+                            <div class="form-group flex-1">
+                                <label>Meal Period</label>
+                                <select id="waste-meal-select" class="form-input" onchange="updateWasteDishesList()">
+                                    <option value="Breakfast">Breakfast</option>
+                                    <option value="Lunch" selected>Lunch</option>
+                                    <option value="Snacks">Snacks</option>
+                                    <option value="Dinner">Dinner</option>
+                                </select>
+                            </div>
+                            <div class="form-group flex-2">
+                                <label>Dish Name</label>
+                                <select id="waste-dish-select" class="form-input">
+                                    <!-- Populated dynamically -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group flex-1">
+                                <label>Waste Type</label>
+                                <select id="waste-type-select" class="form-input">
+                                    <option value="Leftover cooked" selected>Leftover cooked</option>
+                                    <option value="Plate waste">Plate waste</option>
+                                    <option value="Preparation">Preparation / Trimming</option>
+                                </select>
+                            </div>
+                            <div class="form-group flex-1">
+                                <label>Weight (kg)</label>
+                                <input type="number" id="waste-weight-input" class="form-input" step="0.5" min="0.5" max="300" placeholder="e.g. 12.5" required>
+                            </div>
+                            <div class="form-group flex-1">
+                                <label>Destination</label>
+                                <select id="waste-dest-select" class="form-input">
+                                    <option value="NGO Donation">NGO Donation</option>
+                                    <option value="Composting" selected>Composting & Biogas</option>
+                                    <option value="Discarded">Discarded / Landfill</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Operational Notes (Optional)</label>
+                            <input type="text" id="waste-notes-input" class="form-input" placeholder="e.g. Heavy rain reduced lunch turnout">
+                        </div>
+
+                        <button type="submit" class="btn-primary">Save Waste Entry</button>
+                    </form>
+                </div>
+            </section>
+
+            
+
+            
+
+            <!-- TAB 4: ANALYTICS (Exact 4-Column Layout from Reference) -->
+            <section id="atab-analytics" class="admin-tab" style="display:none;">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:14px;">
+                    <div class="data-source-bar" style="margin-bottom:0;">
+                        <span class="ds-label">Data Filter:</span>
+                        <button type="button" class="ds-pill active" id="dspill-analytics-real" onclick="setDataSource('REAL')">REAL</button>
+                        <button type="button" class="ds-pill" id="dspill-analytics-all" onclick="setDataSource('ALL')">ALL (Live + Baseline)</button>
+                        <button type="button" class="ds-pill" id="dspill-analytics-synthetic" onclick="setDataSource('SYNTHETIC')">SYNTHETIC</button>
+                    </div>
+                </div>
+
+                <div id="analytics-insufficient-notice" class="insufficient-data-alert" style="display:none;">
+                    <span>⚠️</span>
+                    <span>Insufficient real operational data. Submit actual meal records to generate this metric.</span>
+                </div>
+
+                <div class="analytics-4col-grid">
+
+                    <!-- Col 1: Weekly waste: before and after -->
+                    <div class="analytics-card">
+                        <div class="ac-top">
+                            <h4 class="ac-title">Weekly waste: before and after</h4>
+                            <div class="svg-chart-wrapper">
+                                <svg viewBox="0 0 220 160" class="stacked-bar-svg" id="analytics-svg-chart">
+                                    <!-- Bar 1: Week 1 (460 kg) -->
+                                    <text x="30" y="18" fill="#8FA498" font-size="9" text-anchor="middle">460 kg</text>
+                                    <rect x="18" y="24" width="24" height="28" fill="#7C3AED" rx="2" />
+                                    <rect x="18" y="54" width="24" height="48" fill="#EF4444" rx="2" />
+                                    <rect x="18" y="104" width="24" height="34" fill="#F59E0B" rx="2" />
+                                    <text x="30" y="150" fill="#8FA498" font-size="8.5" text-anchor="middle">Week 1</text>
+
+                                    <!-- Bar 2: Week 2 (360 kg) -->
+                                    <text x="80" y="44" fill="#8FA498" font-size="9" text-anchor="middle">360 kg</text>
+                                    <rect x="68" y="50" width="24" height="22" fill="#7C3AED" rx="2" />
+                                    <rect x="68" y="74" width="24" height="38" fill="#EF4444" rx="2" />
+                                    <rect x="68" y="114" width="24" height="24" fill="#F59E0B" rx="2" />
+                                    <text x="80" y="150" fill="#8FA498" font-size="8.5" text-anchor="middle">Week 2</text>
+
+                                    <!-- Bar 3: Week 3 (295 kg) -->
+                                    <text x="130" y="60" fill="#8FA498" font-size="9" text-anchor="middle">295 kg</text>
+                                    <rect x="118" y="66" width="24" height="18" fill="#7C3AED" rx="2" />
+                                    <rect x="118" y="86" width="24" height="30" fill="#EF4444" rx="2" />
+                                    <rect x="118" y="118" width="24" height="20" fill="#F59E0B" rx="2" />
+                                    <text x="130" y="150" fill="#8FA498" font-size="8.5" text-anchor="middle">Week 3</text>
+
+                                    <!-- Bar 4: Week 4 (258 kg + live) -->
+                                    <text x="180" y="72" fill="#34D399" font-size="9" font-weight="bold" text-anchor="middle" id="svg-w4-label">258 kg</text>
+                                    <rect x="168" y="78" width="24" height="16" fill="#7C3AED" rx="2" />
+                                    <rect x="168" y="96" width="24" height="24" fill="#EF4444" rx="2" />
+                                    <rect x="168" y="122" width="24" height="16" fill="#F59E0B" rx="2" />
+                                    <text x="180" y="150" fill="#34D399" font-size="8.5" font-weight="bold" text-anchor="middle">Week 4</text>
+                                </svg>
+                            </div>
+                            <div class="chart-legend">
+                                <span><span class="l-sq sq-prep"></span> Preparation</span>
+                                <span><span class="l-sq sq-leftover"></span> Leftover cooked</span>
+                                <span><span class="l-sq sq-plate"></span> Plate waste</span>
+                            </div>
+                        </div>
+                        <div class="ac-bottom-sub">
+                            Week 1 is the baseline with no system. Weeks 2-4 use opt-ins and the planner (simulated); Week 4 also includes your live entries.
+                        </div>
+                    </div>
+
+                    <!-- Col 2: Least popular dishes -->
+                    <div class="analytics-card">
+                        <div class="ac-top">
+                            <h4 class="ac-title">Least popular dishes</h4>
+                            <div class="dishes-rank-list" id="analytics-least-popular-list">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                        <div class="ac-bottom-sub">
+                            Candidates to change or cut portions on.
+                        </div>
+                    </div>
+
+                    <!-- Col 3: Most wasted dishes (your entries) -->
+                    <div class="analytics-card">
+                        <div class="ac-top">
+                            <h4 class="ac-title">Most wasted dishes (your entries)</h4>
+                            <div class="wasted-entries-list" id="analytics-most-wasted-list">
+                                <div class="empty-wasted-msg">Log some waste to see this.</div>
+                            </div>
+                        </div>
+                        <div class="ac-bottom-sub highlight-mint" id="analytics-wasted-note">
+                            Updated immediately with each waste log.
+                        </div>
+                    </div>
+
+                    <!-- Col 4: Cost of waste -->
+                    <div class="analytics-card">
+                        <div class="ac-top">
+                            <h4 class="ac-title">Cost of waste</h4>
+                            <div class="large-cost-figure" id="analytics-cost-figure">₹9,030</div>
+                            <div class="cost-subtext" id="analytics-cost-subtext">This week at ₹35/kg. Baseline week was ₹16,100.</div>
+
+                            <div class="cost-input-wrapper">
+                                <label class="cost-input-label">Average cost per kg (₹)</label>
+                                <input type="number" id="analytics-cost-input" class="form-input cost-input-box" value="35" min="10" max="250" step="1" oninput="updateCostPerKg(this.value)">
+                            </div>
+                        </div>
+                        <div class="ac-bottom-sub">
+                            <a href="/api/admin/reports/csv" class="download-link" download>📥 Download CSV Audit Report</a>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Environmental Waste Distribution Section -->
+                <div class="environmental-audit-card">
+                    <div class="ea-header">
+                        <h4 class="ea-title">♻️ Environmental Waste Distribution & Audit</h4>
+                        <span class="audit-badge">SQLite Real-time</span>
+                    </div>
+                    <div class="ea-grid">
+                        <div class="ea-item border-ngo">
+                            <div class="ea-label">🤝 NGO Food Bank</div>
+                            <div class="ea-val" id="ea-ngo-val">116 kg</div>
+                            <div class="ea-sub">Re-routed safely to community meals</div>
+                        </div>
+                        <div class="ea-item border-compost">
+                            <div class="ea-label">🌱 Composting & Biogas</div>
+                            <div class="ea-val" id="ea-comp-val">90 kg</div>
+                            <div class="ea-sub">Converted into fertilizer for campus greenery</div>
+                        </div>
+                        <div class="ea-item border-disc">
+                            <div class="ea-label">🗑️ Discarded / Landfill</div>
+                            <div class="ea-val" id="ea-disc-val">52 kg</div>
+                            <div class="ea-sub">Unrecoverable residues</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            
+
+                    <!-- TAB 5: MANAGE USERS -->
+                        <!-- TAB 6: ADMIN LEADERBOARD -->
+            <section id="atab-leaderboard" class="admin-tab" style="display:none;">
+                <!-- 4 KPI Overview Cards -->
+                <div class="user-stats-grid">
+                    <div class="user-stat-card">
+                        <div class="stat-header">
+                            <span>Students Participating</span>
+                            <span class="stat-icon">🎓</span>
+                        </div>
+                        <div class="stat-num" id="admin-lb-total-students">1,204</div>
+                        <div class="stat-subtext">Active dining profiles</div>
+                    </div>
+                    <div class="user-stat-card">
+                        <div class="stat-header">
+                            <span>Total Food Saved</span>
+                            <span class="stat-icon">🥗</span>
+                        </div>
+                        <div class="stat-num" id="admin-lb-food-saved">1,659 kg</div>
+                        <div class="stat-subtext">Pre-informed skips avoided</div>
+                    </div>
+                    <div class="user-stat-card">
+                        <div class="stat-header">
+                            <span>Green Points Awarded</span>
+                            <span class="stat-icon">⭐</span>
+                        </div>
+                        <div class="stat-num" id="admin-lb-total-pts">317,160</div>
+                        <div class="stat-subtext">Across all student actions</div>
+                    </div>
+                    <div class="user-stat-card">
+                        <div class="stat-header">
+                            <span>Top Eco Champion</span>
+                            <span class="stat-icon">🏆</span>
+                        </div>
+                        <div class="stat-num" id="admin-lb-top-champ" style="font-size:1.6rem; color:var(--mint-primary);">24BDS021</div>
+                        <div class="stat-subtext" id="admin-lb-champ-sub">610 Green Points</div>
+                    </div>
+                </div>
+
+                <!-- Leaderboard Table Card -->
+                <div class="user-directory-card">
+                    <div class="user-toolbar">
+                        <div class="toolbar-left">
+                            <input type="text" id="admin-lb-search" class="form-input" placeholder="🔍 Search roll no, name, username..." oninput="handleAdminLeaderboardSearch(this.value)">
+                        </div>
+                        <div class="toolbar-right">
+                            <select id="admin-lb-badge-filter" class="form-input" style="width:auto;" onchange="handleAdminLeaderboardFilter()">
+                                <option value="All">All Tiers</option>
+                                <option value="Eco Champion">Eco Champion (500+)</option>
+                                <option value="Eco Warrior">Eco Warrior (300+)</option>
+                                <option value="Sprout">Sprout (150+)</option>
+                                <option value="Seedling">Seedling (<150)</option>
+                            </select>
+                            <a href="/api/admin/leaderboard/csv" class="btn-primary" download style="text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
+                                📥 Export Leaderboard CSV
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive" style="margin-top:16px;">
+                        <table class="user-directory-table">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Roll Number</th>
+                                    <th>Username</th>
+                                    <th>Full Name</th>
+                                    <th>Meals Logged</th>
+                                    <th>Meals Skipped</th>
+                                    <th>Food Saved (kg)</th>
+                                    <th>Ratings</th>
+                                    <th>Green Points</th>
+                                    <th>Eco Tier</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-lb-tbody">
+                                <tr><td colspan="10" style="text-align:center; color:#8FA498; padding:24px;">Loading student leaderboard...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="user-pagination-bar">
+                        <span id="admin-lb-page-info" class="user-count-info">Showing 0 of 0 accounts</span>
+                        <div class="user-pagination-btns">
+                            <button type="button" class="btn-subtle" id="btn-prev-alb" onclick="prevAdminLbPage()" disabled>Previous</button>
+                            <span id="admin-lb-page-indicator" style="font-size:12px; color:#A7F3D0; font-weight:600; padding:0 8px;">Page 1</span>
+                            <button type="button" class="btn-subtle" id="btn-next-alb" onclick="nextAdminLbPage()">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <section id="atab-users" class="admin-tab" style="display:none;">
+                <!-- 4 User Stat Cards -->
+                <div class="user-stats-grid">
+                    <div class="user-stat-card">
+                        <div class="stat-header">
+                            <span>Total Students</span>
+                            <span class="stat-icon">🎓</span>
+                        </div>
+                        <div class="stat-num" id="stat-total-students">1,200</div>
+                        <div class="stat-subtext">Registered dining students</div>
+                    </div>
+                    <div class="user-stat-card">
+                        <div class="stat-header">
+                            <span>Kitchen Staff</span>
+                            <span class="stat-icon">👨‍🍳</span>
+                        </div>
+                        <div class="stat-num" id="stat-total-staff">12</div>
+                        <div class="stat-subtext">Cooks & waste loggers</div>
+                    </div>
+                    <div class="user-stat-card">
+                        <div class="stat-header">
+                            <span>Admin Accounts</span>
+                            <span class="stat-icon">🛡️</span>
+                        </div>
+                        <div class="stat-num" id="stat-total-admins">4</div>
+                        <div class="stat-subtext">Mess managers & wardens</div>
+                    </div>
+                    <div class="user-stat-card">
+                        <div class="stat-header">
+                            <span>Active Accounts</span>
+                            <span class="stat-icon">✅</span>
+                        </div>
+                        <div class="stat-num" id="stat-active-accounts">1,216</div>
+                        <div class="stat-subtext">Permitted to authenticate</div>
+                    </div>
+                </div>
+
+                <!-- User Directory Card -->
+                <div class="user-directory-card">
+                    <div class="user-toolbar">
+                        <div class="toolbar-left">
+                            <input type="text" id="user-search-input" class="form-input" placeholder="🔍 Search roll no, name, username..." oninput="handleUserSearchInput(this.value)">
+                        </div>
+                        <div class="toolbar-right">
+                            <select id="user-role-filter" class="form-input" style="width:auto;" onchange="handleUserFilterChange()">
+                                <option value="All">All Roles</option>
+                                <option value="Student">Students Only</option>
+                                <option value="Kitchen Staff">Kitchen Staff</option>
+                                <option value="Admin">Admins</option>
+                            </select>
+                            <select id="user-status-filter" class="form-input" style="width:auto;" onchange="handleUserFilterChange()">
+                                <option value="All">All Status</option>
+                                <option value="Active">Active Only</option>
+                                <option value="Inactive">Inactive / Suspended</option>
+                            </select>
+                            <button type="button" class="btn-primary" onclick="toggleAddUserForm()">+ Add New User</button>
+                        </div>
+                    </div>
+
+                    <!-- Collapsible Add User Form -->
+                    <div id="add-user-card" class="add-user-card" style="display:none;">
+                        <h4 class="form-card-title">Register New Account</h4>
+                        <form id="create-user-form" onsubmit="handleCreateUser(event)">
+                            <div class="form-row">
+                                <div class="form-group flex-1">
+                                    <label>Role *</label>
+                                    <select id="new-user-role" class="form-input" onchange="toggleRollNumberField()">
+                                        <option value="Student" selected>Student</option>
+                                        <option value="Kitchen Staff">Kitchen Staff</option>
+                                        <option value="Admin">Admin</option>
+                                    </select>
+                                </div>
+                                <div class="form-group flex-1" id="group-new-roll">
+                                    <label>Student Roll Number *</label>
+                                    <input type="text" id="new-user-roll" class="form-input" placeholder="e.g. 24BDS099" style="text-transform:uppercase;">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group flex-1">
+                                    <label>Username *</label>
+                                    <input type="text" id="new-user-name" class="form-input" placeholder="e.g. 24bds099 or chef_kiran" required>
+                                </div>
+                                <div class="form-group flex-1">
+                                    <label>Full Name</label>
+                                    <input type="text" id="new-user-fullname" class="form-input" placeholder="e.g. Kiran Kumar">
+                                </div>
+                                <div class="form-group flex-1">
+                                    <label>Initial Password *</label>
+                                    <input type="password" id="new-user-password" class="form-input" placeholder="Minimum 6 characters" required>
+                                </div>
+                            </div>
+                            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:12px;">
+                                <button type="button" class="btn-secondary" onclick="toggleAddUserForm()">Cancel</button>
+                                <button type="submit" class="btn-primary">Create User Account</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Responsive Users Directory Table -->
+                    <div class="table-responsive" style="margin-top:16px;">
+                        <table class="user-directory-table">
+                            <thead>
+                                <tr>
+                                    <th>Roll Number</th>
+                                    <th>Username</th>
+                                    <th>Full Name</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table-body">
+                                <tr><td colspan="6" style="text-align:center; color:#8FA498; padding:20px;">Loading user accounts...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination / Footer Info -->
+                    <div class="user-pagination-bar">
+                        <span id="user-count-info" class="user-count-info">Showing 0 of 0 accounts</span>
+                        <div class="user-pagination-btns">
+                            <button type="button" class="btn-subtle" id="btn-prev-page" onclick="prevUserPage()" disabled>Previous</button>
+                            <span id="user-page-indicator" style="font-size:12px; color:#A7F3D0; font-weight:600; padding:0 8px;">Page 1</span>
+                            <button type="button" class="btn-subtle" id="btn-next-page" onclick="nextUserPage()">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+</main>
+
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="toast"></div>
+
+    <script src="app.js"></script>
+
+    <!-- EDIT USER MODAL -->
+    <div id="edit-user-modal" class="app-modal-overlay hidden">
+        <div class="app-modal-card">
+            <h3 class="app-modal-title">✏️ Edit User Details</h3>
+            <p class="app-modal-sub" id="edit-user-sub">Update profile information for this account.</p>
+            <form id="edit-user-form" onsubmit="handleSaveEditUser(event)">
+                <input type="hidden" id="edit-user-id">
+                <div class="form-group" style="margin-bottom:14px;">
+                    <label>Username</label>
+                    <input type="text" id="edit-user-username" class="form-input" disabled style="opacity:0.7;">
+                </div>
+                <div class="form-group" style="margin-bottom:14px;">
+                    <label>Full Name</label>
+                    <input type="text" id="edit-user-fullname" class="form-input" placeholder="e.g. Ramesh Patil">
+                </div>
+                <div class="form-group" style="margin-bottom:14px;">
+                    <label>Roll Number</label>
+                    <input type="text" id="edit-user-roll" class="form-input" placeholder="e.g. 24BDS021" style="text-transform:uppercase;">
+                </div>
+                <div class="form-group" style="margin-bottom:20px;">
+                    <label>Role</label>
+                    <select id="edit-user-role" class="form-input">
+                        <option value="Student">Student</option>
+                        <option value="Kitchen Staff">Kitchen Staff</option>
+                        <option value="Admin">Admin</option>
+                    </select>
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:10px;">
+                    <button type="button" class="btn-secondary" onclick="closeEditUserModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- RESET PASSWORD MODAL -->
+    <div id="reset-password-modal" class="app-modal-overlay hidden">
+        <div class="app-modal-card">
+            <h3 class="app-modal-title">🔒 Reset Password</h3>
+            <p class="app-modal-sub" id="reset-password-sub">Set a new secure password for this user.</p>
+            <form id="reset-password-form" onsubmit="handleSaveResetPassword(event)">
+                <input type="hidden" id="reset-user-id">
+                <div class="form-group" style="margin-bottom:16px;">
+                    <label>New Password *</label>
+                    <input type="password" id="reset-new-password" class="form-input" placeholder="Minimum 6 characters" required>
+                </div>
+                <div class="form-group" style="margin-bottom:20px;">
+                    <label>Confirm Password *</label>
+                    <input type="password" id="reset-confirm-password" class="form-input" placeholder="Re-enter password" required>
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:10px;">
+                    <button type="button" class="btn-secondary" onclick="closeResetPasswordModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">Update Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>
+

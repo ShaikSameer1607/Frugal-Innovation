@@ -1,0 +1,21 @@
+{
+  "name": "frugal-main",
+  "version": "1.0.0",
+  "description": "[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/) [![Framework-Streamlit](https://img.shields.io/badge/Framework-Streamlit-red.svg)](https://streamlit.io/) [![Database-SQLite](https://img.shields.io/badge/Database-SQLite-lightgrey.svg)](https://sqlite.org/) [![Course](https://img.shields.io/badge/Course-Frugal%20Innovation%20(3%20Credits)-green.svg)](https://iiitdwd.ac.in/) [![Institution](https://img.shields.io/badge/Institution-IIIT%20Dharwad-navy.svg)](https://iiitdwd.ac.in/)",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "seed": "node scripts/seed_1200_students.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.3.0"
+  }
+}

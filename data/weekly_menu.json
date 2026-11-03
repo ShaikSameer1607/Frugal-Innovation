@@ -1,0 +1,275 @@
+{
+  "metadata": {
+    "mess_name": "IIIT Dharwad Mess 1",
+    "campus": "IIIT Dharwad",
+    "capacity": 1200,
+    "committee": "Mess Committee IIIT DWD",
+    "notes": [
+      "Note 1 : '/' - Slashed items should be provided in alternative weeks",
+      "Note 2 : Limitation applies only to Banana, Sweet, Punugulu and Fruits Items (Maximum Banana 2 Piece, Ice Cream 1 Cup)",
+      "Note 3 : On Afternoons Eggs are limited to 2"
+    ]
+  },
+  "menu": {
+    "Monday": {
+      "Breakfast": {
+        "dishes": [
+          "Pongal / Poha with sev",
+          "Chutney",
+          "Black Chana Sprouts",
+          "Boiled Egg"
+        ],
+        "daily_fixed": "fruits, cornflakes, bread-butter-jam, tea / coffee / milk / Bournvita / Horlicks"
+      },
+      "Lunch": {
+        "dishes": [
+          "Curd Rice",
+          "Dal Methi",
+          "Brinjal Bhartha",
+          "Chapati / Fulka",
+          "Buttermilk"
+        ],
+        "daily_fixed": "plain rice, pickle, papad, mix salad, green chilli / lemon"
+      },
+      "Snacks": {
+        "dishes": [
+          "Samosa"
+        ],
+        "daily_fixed": "red & green chutney (not Tuesday), fruits, bread-butter-jam, ginger tea / milk"
+      },
+      "Dinner": {
+        "dishes": [
+          "Kadai Paneer",
+          "Rasam",
+          "Dal Pancharatan",
+          "Sheera (Rava)"
+        ],
+        "daily_fixed": "plain rice, chapati / fulka, mix salad, pickle, green chilli / lemon"
+      }
+    },
+    "Tuesday": {
+      "Breakfast": {
+        "dishes": [
+          "Upma / Sewaiya Upma",
+          "Sheera",
+          "Chutney",
+          "Boiled Groundnut",
+          "Egg Bhurji"
+        ],
+        "daily_fixed": "fruits, cornflakes, bread-butter-jam, tea / coffee / milk / Bournvita / Horlicks"
+      },
+      "Lunch": {
+        "dishes": [
+          "Veg Pulav",
+          "Dal Tadka",
+          "White Pese Masala",
+          "Puri",
+          "Lemonade",
+          "Curd"
+        ],
+        "daily_fixed": "plain rice, pickle, papad, mix salad, green chilli / lemon"
+      },
+      "Snacks": {
+        "dishes": [
+          "Pani Puri"
+        ],
+        "daily_fixed": "fruits, bread-butter-jam, ginger tea / milk"
+      },
+      "Dinner": {
+        "dishes": [
+          "Khichadi / Bisibele Bath with Boodi",
+          "Bhendi Sabji",
+          "Veg Kadai",
+          "Channa Dal",
+          "Ice Cream (Variety of Flavours)"
+        ],
+        "daily_fixed": "plain rice, chapati / fulka, mix salad, pickle, green chilli / lemon"
+      }
+    },
+    "Wednesday": {
+      "Breakfast": {
+        "dishes": [
+          "Idli, Vada",
+          "Sambar & Chutney",
+          "Matki Sprouts",
+          "Boiled Egg"
+        ],
+        "daily_fixed": "fruits, cornflakes, bread-butter-jam, tea / coffee / milk / Bournvita / Horlicks"
+      },
+      "Lunch": {
+        "dishes": [
+          "Onion Rice",
+          "Dal Makhani",
+          "Jeera Aloo",
+          "Chawli Masala",
+          "Chapati / Fulka",
+          "Jaljeera",
+          "Curd"
+        ],
+        "daily_fixed": "plain rice, pickle, papad, mix salad, green chilli / lemon"
+      },
+      "Snacks": {
+        "dishes": [
+          "Punugulu & chutney"
+        ],
+        "daily_fixed": "red & green chutney (not Tuesday), fruits, bread-butter-jam, ginger tea / milk"
+      },
+      "Dinner": {
+        "dishes": [
+          "Soyabean Biryani",
+          "Paneer Kholapuri",
+          "Rasam",
+          "Raitha, Masoor Dal",
+          "Shevai Kheer"
+        ],
+        "daily_fixed": "plain rice, chapati / fulka, mix salad, pickle, green chilli / lemon"
+      }
+    },
+    "Thursday": {
+      "Breakfast": {
+        "dishes": [
+          "Aloo Partha",
+          "Chutney & curd",
+          "Boiled Sweet Corn",
+          "Boiled Egg"
+        ],
+        "daily_fixed": "fruits, cornflakes, bread-butter-jam, tea / coffee / milk / Bournvita / Horlicks"
+      },
+      "Lunch": {
+        "dishes": [
+          "Puliogare",
+          "Dal Fry",
+          "Brinjal Tomato",
+          "Kadhi Pakoda",
+          "Chapati / Fulka",
+          "Lassi"
+        ],
+        "daily_fixed": "plain rice, pickle, papad, mix salad, green chilli / lemon"
+      },
+      "Snacks": {
+        "dishes": [
+          "Veg Noodles"
+        ],
+        "daily_fixed": "red & green chutney (not Tuesday), fruits, bread-butter-jam, ginger tea / milk"
+      },
+      "Dinner": {
+        "dishes": [
+          "Onion Rice",
+          "Ivy Gourd Fry",
+          "Cabbage Baji",
+          "Dal",
+          "Mothichoor Ladoo"
+        ],
+        "daily_fixed": "plain rice, chapati / fulka, mix salad, pickle, green chilli / lemon"
+      }
+    },
+    "Friday": {
+      "Breakfast": {
+        "dishes": [
+          "Masala Dosa",
+          "Sambar & Chutney",
+          "Green Moong Sprouts"
+        ],
+        "daily_fixed": "fruits, cornflakes, bread-butter-jam, tea / coffee / milk / Bournvita / Horlicks"
+      },
+      "Lunch": {
+        "dishes": [
+          "Veg & Egg Biryani",
+          "Mix Veg Raitha",
+          "Black channa Masala",
+          "Chapati / Fulka",
+          "Lemon Juice",
+          "Curd"
+        ],
+        "daily_fixed": "plain rice, pickle, papad, mix salad, green chilli / lemon"
+      },
+      "Snacks": {
+        "dishes": [
+          "Pasta"
+        ],
+        "daily_fixed": "red & green chutney (not Tuesday), fruits, bread-butter-jam, ginger tea / milk"
+      },
+      "Dinner": {
+        "dishes": [
+          "Tomato Rice",
+          "Aloo 65",
+          "Soyabean Sabzi Gravy",
+          "Dal Tadka",
+          "Gulab Jamun"
+        ],
+        "daily_fixed": "plain rice, chapati / fulka, mix salad, pickle, green chilli / lemon"
+      }
+    },
+    "Saturday": {
+      "Breakfast": {
+        "dishes": [
+          "Uthappamm",
+          "Chutney / Coconut Chutney",
+          "Matki Sprouts",
+          "Egg Bhurji"
+        ],
+        "daily_fixed": "fruits, cornflakes, bread-butter-jam, tea / coffee / milk / Bournvita / Horlicks"
+      },
+      "Lunch": {
+        "dishes": [
+          "Curd Rice",
+          "Dal Palak",
+          "Chole Bhature",
+          "Hot Badam Milk"
+        ],
+        "daily_fixed": "plain rice, pickle, papad, mix salad, green chilli / lemon"
+      },
+      "Snacks": {
+        "dishes": [
+          "Masala Bhel"
+        ],
+        "daily_fixed": "red & green chutney (not Tuesday), fruits, bread-butter-jam, ginger tea / milk"
+      },
+      "Dinner": {
+        "dishes": [
+          "Jeera Rice",
+          "Curd",
+          "Shahi Paneer",
+          "Dal Kholapuri",
+          "Ice Cream (Variety of Flavours)"
+        ],
+        "daily_fixed": "plain rice, chapati / fulka, mix salad, pickle, green chilli / lemon"
+      }
+    },
+    "Sunday": {
+      "Breakfast": {
+        "dishes": [
+          "Vangi Bath",
+          "Aloo Mutter Sabzi",
+          "Green Moong Sprouts"
+        ],
+        "daily_fixed": "fruits, cornflakes, bread-butter-jam, tea / coffee / milk / Bournvita / Horlicks"
+      },
+      "Lunch": {
+        "dishes": [
+          "Moong Dal",
+          "Panner Butter Masala",
+          "Egg Curry",
+          "Chapati / Fulka",
+          "Rasna"
+        ],
+        "daily_fixed": "plain rice, pickle, papad, mix salad, green chilli / lemon"
+      },
+      "Snacks": {
+        "dishes": [
+          "Girmit(Bhel)"
+        ],
+        "daily_fixed": "red & green chutney (not Tuesday), fruits, bread-butter-jam, ginger tea / milk"
+      },
+      "Dinner": {
+        "dishes": [
+          "Sorakay Chana",
+          "Veg Kholapuri",
+          "Moong Dal",
+          "Jalebi"
+        ],
+        "daily_fixed": "plain rice, chapati / fulka, mix salad, pickle, green chilli / lemon"
+      }
+    }
+  }
+}
