@@ -14,8 +14,21 @@ const { DatabaseSync } = require('node:sqlite');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const DB_PATH = path.join(__dirname, 'data', 'messmind.db');
+let DB_PATH = path.join(__dirname, 'data', 'messmind.db');
 const MENU_PATH = path.join(__dirname, 'data', 'weekly_menu.json');
+
+// Vercel serverless environment compatibility (writable /tmp)
+if (process.env.VERCEL) {
+    const tmpDbPath = path.join('/tmp', 'messmind.db');
+    if (!fs.existsSync(tmpDbPath)) {
+        try {
+            fs.copyFileSync(DB_PATH, tmpDbPath);
+        } catch (e) {
+            console.error('Failed to copy SQLite db to /tmp on Vercel:', e);
+        }
+    }
+    DB_PATH = tmpDbPath;
+}
 
 // Middleware
 app.use(cors());
@@ -1263,11 +1276,15 @@ app.get('/api/admin/leaderboard/csv', (req, res) => {
 
 
 // Start Express Server
-app.listen(PORT, () => {
-    console.log(`=======================================================`);
-    console.log(`MessMind AI - Smart Mess Server running on Node.js!`);
-    console.log(`Local Access: http://localhost:${PORT}`);
-    console.log(`Capacity: 1,200 Students | SQLite: data/messmind.db`);
-    console.log(`=======================================================`);
-});
+if (!process.env.VERCEL) {
+    app.listen(PORT, () => {
+        console.log(`=======================================================`);
+        console.log(`MessMind AI - Smart Mess Server running on Node.js!`);
+        console.log(`Local Access: http://localhost:${PORT}`);
+        console.log(`Capacity: 1,200 Students | SQLite: ${DB_PATH}`);
+        console.log(`=======================================================`);
+    });
+}
+
+module.exports = app;
 
